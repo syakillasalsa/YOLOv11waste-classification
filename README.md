@@ -42,7 +42,8 @@ This project aims to:
 - Utilize AI for real-world environmental solutions  
 
 ## 📷 Preview
-*(Add your screenshots here if available)*
+<img width="1920" height="1030" alt="image" src="https://github.com/user-attachments/assets/fc994f56-ae94-4906-82da-a497c6da366b" />
+
 
 ## 👩‍💻 Author
 Developed by **Syakilla Salsa**
