@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoVision AI | Smart Waste Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f7f9; }
+        .eco-bg { background: linear-gradient(135deg, #e0f2f1 0%, #f1f8e9 100%); }
+        .card-main { background: rgba(255, 255, 255, 0.9); border-radius: 1.5rem; border: 1px solid #e2e8f0; }
+        .btn-eco { background-color: #00A78E; color: white; transition: all 0.3s; }
+        .btn-eco:hover { background-color: #008f7a; transform: translateY(-2px); }
+        .icon-box { background-color: #00D1B2; color: white; border-radius: 1rem; }
+    </style>
+</head>
+<body class="min-h-screen eco-bg flex items-center justify-center p-4">
+
+    <div class="max-w-6xl w-full">
+    <header class="text-center mb-8">
+        <div class="flex justify-center mb-3">
+            <img 
+                src="/static/img/logokereta.png"
+                alt="Logo"
+                class="w-16 h-16 object-contain"
+            >
+        </div>
+
+            <h1 class="text-3xl font-bold text-slate-800 tracking-tight">EcoSmart Station</h1>
+            <p class="text-slate-500 text-sm mt-1 font-medium italic">Sistem klasifikasi Sampah Di Stasiun Kereta Api </p>
+            <div class="mt-2 text-[10px] font-bold text-teal-600 uppercase tracking-widest flex items-center justify-center gap-2">
+                <span class="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></span> Sistem Aktif
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-7 card-main p-8 flex flex-col items-center justify-center border-2 border-dashed border-slate-200">
+                <div id="display-container" class="w-full flex flex-col items-center justify-center min-h-[350px]">
+                    <video id="webcam" autoplay playsinline class="hidden w-full rounded-2xl object-contain"></video>
+                    <img id="preview" src="" class="hidden w-full rounded-2xl object-contain">
+                    
+                    <div id="placeholder" class="text-center space-y-4">
+                        <div class="w-20 h-20 icon-box flex items-center justify-center mx-auto shadow-xl">
+                            <i class="fas fa-cloud-upload-alt text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-700">Unggah Gambar Di sini</h3>
+                        <p class="text-slate-400 text-xs px-10">Unggah Citra Sampah untuk Proses Klasifikasi dan Deteksi</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mt-8 w-full max-w-sm">
+                    <label class="btn-eco btn-primary flex-1 py-3 rounded-xl font-bold text-sm text-center cursor-pointer shadow-md">
+                        Pilih Gambar
+                        <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="handleUpload(event)">
+                    </label>
+                    <button onclick="startCamera()" class="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-50 transition">
+                        <i class="fas fa-camera"></i> Pindai Kamera
+                    </button>
+                </div>
+                <button id="captureBtn" onclick="captureImage()" class="hidden w-full mt-4 btn-eco py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-xl shadow-teal-100">Analisis Objek</button>
+            </div>
+
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="card-main p-6 shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-4 text-sm">Kategori Sampah</h4>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-blue-50 p-4 rounded-2xl text-center border border-blue-100">
+                            <i class="fas fa-recycle text-blue-500 mb-2"></i>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Organik</p>
+                            
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-2xl text-center border border-green-100">
+                            <i class="fas fa-leaf text-green-500 mb-2"></i>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Anorganik</p>
+                            
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-2xl text-center border border-red-100">
+                            <i class="fas fa-trash-alt text-red-500 mb-2"></i>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">B3</p>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div id="result-section"
+     class="card-main p-6 shadow-md border-l-8 border-teal-500 hidden
+            max-h-[520px] overflow-y-auto">
+
+                    <div id="loading" class="hidden text-center py-4">
+                        <div class="w-8 h-8 border-4 border-teal-200 border-t-teal-500 rounded-full animate-spin mx-auto"></div>
+                    </div>
+                    <div id="result-content" class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h2 id="resLabel" class="text-2xl font-black italic"></h2>
+                            <span id="resConf" class="text-[10px] bg-slate-100 px-2 py-1 rounded-full font-bold"></span>
+                        </div>
+                        <div class="mt-4 flex items-center gap-4 bg-slate-50 p-3 rounded-xl">
+    <img id="binImg" src=""
+         class="w-14 h-14 object-contain"
+         alt="Trash Bin">
+
+    <div>
+        <p id="binText"
+           class="text-sm font-bold text-slate-700"></p>
+        <p class="text-[10px] text-slate-500 italic">
+            Ikuti warna tong sampah sesuai kategori
+        </p>
+    </div>
+</div>
+
+                        <p id="resDesc" class="text-xs text-slate-600 leading-relaxed"></p>
+                        <div class="bg-slate-900 text-white p-4 rounded-xl text-xs">
+                            <p class="font-bold text-teal-400 mb-1">Informasi Tambahan</p>
+                            <p id="resAction" class="italic opacity-80"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="icon-box p-6 shadow-lg shadow-teal-100 flex gap-4">
+                    <i class="fas fa-lightbulb text-2xl mt-1"></i>
+                    <div class="text-xs">
+                        <p class="font-bold mb-1">Peringatan :</p>
+                        <p class="opacity-90 leading-relaxed">Pastikan Sampah dibuang ke Tempat Sampah yang sesuai</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
